@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youtube</title>
+</head>
+<style>
+    header {
+        display: grid;
+        grid-template-columns: 20% 40% 25%;
+        grid-gap: 7%;
+        padding-top: 0px;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-bottom: 20px;
+    }
+
+    header div {
+        height: 60px;
+    }
+
+    /* 
+    header>div:nth-child(1) {
+        height: 600px;
+    } */
+
+    #logo_img {
+        width: 215px;
+        height: 47px;
+        padding: 5px;
+    }
+
+    .search {
+        width: 90%;
+        height: 40px;
+        margin-top: 6px;
+    }
+
+    input[type="text"i] {
+        padding: 1px 2px;
+        font-size: 20px;
+    }
+
+    #btn {
+        width: 60px;
+        height: 46px;
+    }
+
+    .container {
+        /* border: 1px solid red; */
+        height: 500px;
+        width: 93%;
+        margin: auto;
+    }
+
+    .videos {
+        margin: auto;
+        width: 97%;
+        /* border: 1px solid green; */
+        height: 380px;
+        margin-top: 5px;
+    }
+
+    #videos {
+        display: grid;
+        grid-template-columns: repeat(4, auto);
+        grid-gap: 3%;
+    }
+</style>
+
+<body>
+    <header>
+
+        <div id="logo_div">
+            <a href="you.html"><img
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/YouTube_Logo_2017.svg/2560px-YouTube_Logo_2017.svg.png"
+                    alt="" id="logo_img"></a>
+        </div>
+        <div>
+            <input type="text" placeholder="Search" class="search" id="query"><span><button id="btn"
+                    onclick="searchVideos()">search</button></span>
+        </div>
+        <div>
+            <!-- <ul>
+                <li>1</li>
+                <li>1</li>
+                <li>1</li>
+
+            </ul> -->
+        </div>
+
+    </header>
+    <hr>
+    <div class="container">
+
+        <h1 id="heading">Trending Videos</h1>
+        <div id="videos"></div>
+
+    </div>
+</body>
+
+</html>
+<script>
+    // https://youtube.googleapis.com/youtube/v3/search?q=${query}&type=video&key=AIzaSyAjcyNsTYN_PqL4HrE3djt9ZcVkW435XEE // searching videos
+
+    // https://www.googleapis.com/youtube/v3/videos?part=contentDetails&chart=mostPopular&regionCode=IN&key=API_KEY  //trending videoes
+
+    //AIzaSyAjcyNsTYN_PqL4HrE3djt9ZcVkW435XEE = my youtube api key;
+
+    // https://youtube.googleapis.com/youtube/v3/search?q=${}&type=video&key=[YOUR_API_KEY]
+
+    let videos = document.getElementById("videos")
+
+
+
+    async function searchVideos() {
+
+        let query = document.getElementById("query").value;
+
+        let res = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&key=AIzaSyAjcyNsTYN_PqL4HrE3djt9ZcVkW435XEE&maxResults=20`)
+
+        let data = await res.json();
+
+        // console.log(data)
+        appendVideos(data.items)
+
+    }
+    // searchVideos()
+
+    function appendVideos(video_data) {
+        // console.log(video_data)
+
+
+        let trendvideos = document.getElementById("heading");
+        trendvideos.innerText = "results";
+
+
+
+        videos.innerHTML = null;
+        video_data.forEach(({ id: { videoId }, snippet: { title, channelTitle } }) => {
+
+            // console.log(title);
+
+
+            var title1 = document.createElement("p");
+            title1.innerText = title;
+
+            var channel = document.createElement("p");
+            channel.innerText = channelTitle
+
+            let div = document.createElement("div");
+            div.innerHTML = `<iframe width="360" height="215" src="https://www.youtube.com/embed/${videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+
+            div.style.marginTop = "20px";
+
+            div.append(title1, channel)
+
+            videos.append(div);
+        });
+
+    }
+
+    ///popular video
+
+    async function Videos() {
+
+
+        let res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&regionCode=IN&key=AIzaSyAjcyNsTYN_PqL4HrE3djt9ZcVkW435XEE&maxResults=40`)
+
+        let data = await res.json();
+
+        // console.log(data.items)
+
+        trendingVideos(data.items)
+    }
+    Videos()
+
+    function trendingVideos(video_data) {
+        // console.log(video_data)
+
+        // console.log(video_data.id)
+
+
+
+
+        video_data.forEach((data) => {
+
+            // console.log(data)
+            var id = data.id;
+
+            var name = data.snippet.title;
+
+            var dec = data.snippet.description;
+
+            var channelName = data.snippet.channelTitle;
+
+
+            var title = document.createElement("p");
+            title.innerText = name;
+
+            var descri = document.createElement("p")
+            descri.innerText = dec
+            var channel = document.createElement("p");
+            channel.innerText = channelName
+
+
+
+
+
+            let div = document.createElement("div");
+            div.innerHTML = `<iframe width="360" height="215" src="https://www.youtube.com/embed/${id}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+
+            // div.style.marginTop = "5px";
+
+            div.append(title, channel)
+            videos.append(div);
+        });
+
+    }
+
+</script>
+
+
+
+
+
+
+
+
+<!-- youtube trending videos api = https://www.googleapis.com/youtube/v3/videos?part=contentDetails&chart=mostPopular&regionCode=india&key=AIzaSyAjcyNsTYN_PqL4HrE3djt9ZcVkW435XEE -->
